@@ -1,226 +1,78 @@
-{%- doc -%}
-  This snippet is used to render a product card.
-  It is used in the product block, featured product block, and the product card block.
-  The product object is null or when placeholders are rendered.
-
-  @param {object} product - The product object
-  @param {object} children - The children of the product card
-  @param {object} [block] - The block object
-  @param {number} [product_card_gap] - The gap between the product card children (overrides block settings)
-{%- enddoc -%}
-
-{% assign block_settings = block.settings %}
-
-{% style %}
-  {% if request.visual_preview_mode %}
-    product-card-link {
-      width: 100%;
-      min-width: 250px;
-    }
-  {% endif %}
-{% endstyle %}
-
-<div class="resource-list__item">
-  {% render 'product-card', product: product, section_id: section.id %}
-</div>
-
+{%- comment -%} Minimal, safe product card (no recursion, no children/block) {%- endcomment -%}
 {% liquid
-  assign has_quick_add = false
-  if settings.quick_add and product.available
-    assign has_quick_add = true
-  endif
-
-  assign has_mobile_quick_add = false
-  if has_quick_add and settings.mobile_quick_add
-    assign has_mobile_quick_add = true
-  endif
-
-  assign product_card_id = 'product-card-link-' | append: block.id | append: '-' | append: product.id
-  assign product_card_gap_value = product_card_gap | default: block_settings.product_card_gap
-
-  # Logic to determine which variant URL to use (matching swatch selection logic)
-  assign variant_to_link = product.selected_or_first_available_variant
-  assign combined_listing_count = product.options_with_values | map: 'values' | map: 'product_url' | compact | size
-  assign no_swatch_selected = null
-
-  unless combined_listing_count > 0
-    # Simple direct check: which variant owns the featured image?
-    if product.featured_media
-      assign found_variant = false
-
-      for variant in product.variants
-        if variant.featured_media.id == product.featured_media.id
-          assign variant_to_link = variant
-          assign found_variant = true
-          break
-        endif
-      endfor
-
-      # Check if we need to set no_swatch_selected
-      unless found_variant
-        # Featured image is not a variant image
-        # Check if product has swatches
-        for option in product.options_with_values
-          assign swatch_count = option.values | map: 'swatch' | compact | size
-          if swatch_count > 1
-            # Multiple swatches exist but featured image doesn't match any
-            assign no_swatch_selected = true
-            break
-          endif
-        endfor
-      endunless
-    endif
-  endunless
-
-  if settings.transition_to_main_product
-    assign featured_image = variant_to_link.featured_image
-    if featured_image == blank
-      assign featured_image = product.featured_media.preview_image
-    endif
-
-    if featured_image != blank
-      assign featured_media_url = featured_image | image_url: width: 500
-    endif
+  assign p = product
+  if p == blank and card_product != blank
+    assign p = card_product
   endif
 
   assign onboarding = false
-  if product.id == empty
+  if p.id == empty
     assign onboarding = true
+  endif
+
+  assign v = p.selected_or_first_available_variant
+  assign img = v.featured_image
+  if img == blank and p.featured_media
+    assign img = p.featured_media.preview_image
   endif
 %}
 
-{%- if settings.transition_to_main_product -%}
-  <product-card-link
-    data-product-id="{{ product.id }}"
-    data-featured-media-url="{{ featured_media_url }}"
-    data-product-transition="{{ settings.transition_to_main_product }}"
-  >
-{%- endif -%}
-<product-card
-  class="product-card"
-  data-product-id="{{ product.id }}"
-  data-product-variants-size="{{ product.variants.size }}"
-  id="product-card-{{ block.id }}"
-  data-product-transition="{{ settings.transition_to_main_product }}"
-  {{ block.shopify_attributes }}
-  {% if no_swatch_selected %}
-    data-no-swatch-selected="true"
-  {% endif %}
->
+<product-card class="product-card" data-product-id="{{ p.id }}" id="product-card-{{ p.id }}">
   <a
-    id="{{ product_card_id | md5 }}"
-    {% unless onboarding %}
-      href="{{ variant_to_link.url }}"
-    {% endunless %}
+    id="product-card-link-{{ p.id }}"
+    {% unless onboarding %}href="{{ v.url }}"{% endunless %}
     class="product-card__link"
-    ref="productCardLink"
-  >
-    <span class="visually-hidden">
-      {{ product.title }}
-    </span>
-  </a>
-  <div
-    class="
-      product-card__content
-      layout-panel-flex
-      layout-panel-flex--column
-      product-grid__card
-      spacing-style
-      border-style
-      gap-style
-      {% if block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}
-    "
-    style="
-      {% render 'border-override', settings: block_settings %}
-      {% render 'layout-panel-style', settings: block_settings %}
-      {% render 'spacing-style', settings: block_settings %}
-      {% render 'gap-style', value: product_card_gap_value, name: 'product-card-gap' %}
-      --quick-add-display: {% if has_quick_add %}flex{% else %}none{% endif %};
-      --quick-add-mobile-display: {% if has_mobile_quick_add %}flex{% else %}none{% endif %};
-      {% if block_settings.padding-inline-start > 0 %}--zoom-out-padding-inline-start: min(var(--padding-xs), {{ block_settings.padding-inline-start | times: 0.7}}px);{% endif %}
-      {% if block_settings.padding-inline-end > 0 %}--zoom-out-padding-inline-end: min(var(--padding-xs), {{ block_settings.padding-inline-end | times: 0.7}}px);{% endif %}
-      {% if block_settings.padding-block-start > 0 %}--zoom-out-padding-block-start: min(var(--padding-xs), {{ block_settings.padding-block-start | times: 0.7}}px);{% endif %}
-      {% if block_settings.padding-block-end > 0 %}--zoom-out-padding-block-end: min(var(--padding-xs), {{ block_settings.padding-block-end | times: 0.7}}px);{% endif %}
-    "
-  >
-    {{ children }}
+    aria-label="{{ p.title | escape }}"
+  ></a>
+
+  <div class="product-card__content product-grid__card spacing-style border-style">
+   {% if img %}
+  <div class="card-gallery">
+    {% assign target_w = 600 %}
+    {% assign orig_w = img.width  | default: 600 %}
+    {% assign orig_h = img.height | default: 600 %}
+    {% if orig_w > 0 %}
+      {% assign target_h = orig_h | times: target_w | divided_by: orig_w %}
+    {% else %}
+      {% assign target_h = 600 %}
+    {% endif %}
+
+    <img
+      src="{{ img | image_url: width: target_w }}"
+      srcset="
+        {{ img | image_url: width: 360 }} 360w,
+        {{ img | image_url: width: 600 }} 600w,
+        {{ img | image_url: width: 900 }} 900w
+      "
+      sizes="(min-width: 750px) 33vw, 100vw"
+      width="{{ target_w }}"
+      height="{{ target_h }}"
+      alt="{{ p.title | escape }}"
+      loading="lazy"
+      decoding="async"
+      class="product-card__image"
+    >
+  </div>
+{% endif %}
+
+
+    <div class="product-card__title">{{ p.title }}</div>
+
+    <div class="product-card__price">
+      {% if p.compare_at_price > p.price %}
+        <span class="product-card__price--sale">{{ p.price | money }}</span>
+        <s class="product-card__price--compare">{{ p.compare_at_price | money }}</s>
+      {% else %}
+        <span>{{ p.price | money }}</span>
+      {% endif %}
+    </div>
   </div>
 </product-card>
-{%- if settings.transition_to_main_product -%}
-  </product-card-link>
-{%- endif -%}
 
 {% stylesheet %}
-  product-card-link,
-  :not(product-card-link) product-card {
-    width: 100%;
-  }
-
-  .product-card__placeholder-image svg {
-    height: 100%;
-  }
-
-  @media screen and (max-width: 749px) {
-    .product-card slideshow-arrows .slideshow-control {
-      display: none;
-    }
-  }
-
-  /* Hide the variant swatches for product cards that show a swatches variant picker */
-  :is(.product-card):has(swatches-variant-picker-component) .quick-add .variant-option--swatches {
-    display: none;
-  }
-
-  /* Hide "Add" button for single option product cards that show a swatches variant picker */
-  :is(.product-card:not([data-no-swatch-selected])):has(.quick-add__product-form-component--single-option):has(
-      swatches-variant-picker-component
-    )
-    .quick-add__button--choose {
-    display: none;
-  }
-
-  /* Hide "Add" button for single option product cards that show a swatches variant picker */
-  :is(.product-card[data-no-swatch-selected]):has(.quick-add__product-form-component--single-option):has(
-      swatches-variant-picker-component
-    )
-    add-to-cart-component {
-    display: none;
-  }
-
-  /* Hide "add" button for multi-variant product cards that don't show a swatches variant picker */
-  :is(.product-card):has(.quick-add__product-form-component--multi-variant):not(:has(swatches-variant-picker-component))
-    .quick-add__button--add {
-    display: none;
-  }
-
-  /* Hover effect for single variant product cards and product blocks */
-
-  /* stylelint-disable selector-max-specificity */
-  :is(.product-card):has(.quick-add__product-form-component--single-variant) .card-gallery:hover {
-    & .quick-add__button--choose {
-      display: none;
-    }
-
-    & .quick-add__button--add {
-      display: grid;
-    }
-  }
-
-  .product-card[data-no-swatch-selected] slideshow-component[data-generic-media-size='1'] slideshow-arrows {
-    display: none;
-  }
-
-  .product-card[data-no-swatch-selected]
-    slideshow-component[data-generic-media-size='1']
-    slideshow-arrows:has(+ slideshow-slides slideshow-slide[variant-image]:not([hidden])) {
-    display: flex;
-  }
-
-  .product-card .variant-option__swatch svg {
-    display: none;
-  }
-
-  .product-card [data-available-count='0'] ~ svg {
-    display: block;
-  }
+  product-card { width: 100%; display: block; }
+  .product-card__content { display: grid; gap: 8px; }
+  .card-gallery img { width: 100%; height: auto; display: block; }
+  .product-card__title { font-size: 0.95rem; }
+  .product-card__price { font-weight: 600; }
 {% endstylesheet %}
