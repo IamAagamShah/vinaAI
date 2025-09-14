@@ -1,0 +1,138 @@
+{% comment %}
+Service Form — Interview Q&A
+- Collects answers + resume PDF
+- Adds to cart with line item properties
+- Redirects to /checkout
+{% endcomment %}
+
+{% assign product_obj = product | default: closest.product %}
+{% assign v = product_obj.selected_or_first_available_variant %}
+
+<div style="max-width:760px;margin:0;padding:0 clamp(16px,4vw,24px);">
+  <h2 style="margin:0 0 .25rem 0;">{{ product_obj.title }}</h2>
+  <p style="margin:.25rem 0 1rem 0;">Price: {{ product_obj.price | money_with_currency }}</p>
+
+  <form id="sf-form-{{ section.id }}" enctype="multipart/form-data" novalidate>
+    <input type="hidden" name="id" value="{{ v.id }}">
+    <input type="hidden" name="properties[ServiceCode]" value="interview_qa">
+
+    {%- comment -%} Honeypot (bots fill this) {%- endcomment -%}
+    <input type="text" name="properties[Website]" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;height:0;width:0;opacity:0;">
+
+    <div style="display:grid;grid-template-columns:1fr;gap:12px;">
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">First name*</label>
+        <input name="properties[FirstName]" required maxlength="60" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Job title you’re applying for*</label>
+        <input name="properties[JobTitle]" required maxlength="120" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Experience level*</label>
+        <select name="properties[ExperienceLevel]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+          <option value="">Select…</option>
+          <option>Intern/Junior</option>
+          <option>Mid-level</option>
+          <option>Senior</option>
+          <option>Lead/Manager</option>
+        </select>
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">What type of questions?*</label>
+        <select name="properties[QuestionType]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+          <option value="">Select…</option>
+          <option>Technical</option>
+          <option>Behavioral</option>
+          <option>Situational</option>
+          <option>HR / General</option>
+          <option>All of the above</option>
+        </select>
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Company / Industry (optional)</label>
+        <input name="properties[Company]" placeholder="e.g., FinTech, Google" maxlength="120" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+      </div>
+
+      <div style="display:flex;flex-direction:column;grid-column:1 / -1;">
+        <label style="font-weight:600;margin:2px 0 6px;">Job description / key responsibilities (optional)</label>
+        <textarea name="properties[JobDescription]" rows="3" maxlength="1200" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;"></textarea>
+      </div>
+
+      <!-- Resume PDF (required) -->
+      <div style="display:flex;flex-direction:column;grid-column:1 / -1;">
+        <label style="font-weight:600;margin:2px 0 6px;">Upload resume (PDF only, max 10 MB)*</label>
+        <input type="file" name="properties[ResumeFile]" accept="application/pdf" required style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
+        <small style="opacity:.75;margin-top:4px;">Upload only .pdf file.</small>
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Email*</label>
+        <input type="email" name="properties[Email]" required maxlength="120" inputmode="email" autocomplete="email" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+      </div>
+
+      <div style="display:flex;align-items:flex-start;gap:8px;grid-column:1 / -1;">
+        <input type="checkbox" required style="margin-top:4px;">
+        <span>I understand this is a paid digital service.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;grid-column:1 / -1;">
+        <input type="checkbox" required style="margin-top:4px;">
+        <span>I agree to the <a href="/policies/refund-policy" target="_blank" rel="noopener">Terms & Refund policy</a>.</span>
+      </div>
+    </div>
+
+    <button type="submit" class="button button--primary" style="width:100%;padding:14px 16px;border-radius:999px;margin-top:16px">Continue to secure checkout</button>
+  </form>
+</div>
+
+<script>
+(function(){
+  var form = document.getElementById('sf-form-{{ section.id }}');
+  if(!form) return;
+
+  function enable(btn){ if(btn){ btn.disabled=false; btn.textContent='Continue to secure checkout'; } }
+  function disable(btn){ if(btn){ btn.disabled=true; btn.textContent='Adding…'; } }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = form.querySelector('button[type="submit"]');
+    disable(btn);
+
+    // Honeypot: if filled, silently abort
+    var hp = form.querySelector('input[name="properties[Website]"]');
+    if(hp && hp.value){ enable(btn); return; }
+
+    // Required PDF validation
+    var fileInput = form.querySelector('input[name="properties[ResumeFile]"]');
+    if(!fileInput || !fileInput.files || !fileInput.files[0]){
+      alert('Please upload your resume (PDF).'); enable(btn); return;
+    }
+    var f = fileInput.files[0];
+    var name = (f.name || '').toLowerCase();
+
+    if(f.type !== 'application/pdf' && !name.endsWith('.pdf')){
+      alert('Please upload a PDF file (.pdf).'); enable(btn); return;
+    }
+    if(f.size > 10*1024*1024){
+      alert('File is too large. Max 10 MB.'); enable(btn); return;
+    }
+
+    var fd = new FormData(form);
+    fetch('/cart/add.js',{ method:'POST', body:fd, headers:{ 'Accept':'application/json' }})
+      .then(function(r){ if(!r.ok) throw new Error('Cart add failed'); return r.json(); })
+      .then(function(){ window.location.href='/checkout'; })
+      .catch(function(){
+        alert('Could not add to cart. Please try again.');
+        enable(btn);
+      });
+  });
+})();
+</script>
+
+{% schema %}
+{ "name": "Interview Q&A Form", "settings": [], "presets": [{ "name": "Interview Q&A Form" }] }
+{% endschema %}
