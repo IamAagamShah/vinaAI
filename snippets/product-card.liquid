@@ -18,43 +18,41 @@
 %}
 
 <product-card class="product-card" data-product-id="{{ p.id }}" id="product-card-{{ p.id }}">
+
+<div class="product-card__content product-grid__card spacing-style border-style">
   <a
-    id="product-card-link-{{ p.id }}"
+    class="product-card__link-block"
     {% unless onboarding %}href="{{ v.url }}"{% endunless %}
-    class="product-card__link"
     aria-label="{{ p.title | escape }}"
-  ></a>
+  >
+    {% if img %}
+      <div class="card-gallery">
+        {% assign target_w = 600 %}
+        {% assign orig_w = img.width  | default: 600 %}
+        {% assign orig_h = img.height | default: 600 %}
+        {% if orig_w > 0 %}
+          {% assign target_h = orig_h | times: target_w | divided_by: orig_w %}
+        {% else %}
+          {% assign target_h = 600 %}
+        {% endif %}
 
-  <div class="product-card__content product-grid__card spacing-style border-style">
-   {% if img %}
-  <div class="card-gallery">
-    {% assign target_w = 600 %}
-    {% assign orig_w = img.width  | default: 600 %}
-    {% assign orig_h = img.height | default: 600 %}
-    {% if orig_w > 0 %}
-      {% assign target_h = orig_h | times: target_w | divided_by: orig_w %}
-    {% else %}
-      {% assign target_h = 600 %}
+        <img
+          src="{{ img | image_url: width: target_w }}"
+          srcset="
+            {{ img | image_url: width: 360 }} 360w,
+            {{ img | image_url: width: 600 }} 600w,
+            {{ img | image_url: width: 900 }} 900w
+          "
+          sizes="(min-width: 750px) 33vw, 100vw"
+          width="{{ target_w }}"
+          height="{{ target_h }}"
+          alt="{{ p.title | escape }}"
+          loading="lazy"
+          decoding="async"
+          class="product-card__image"
+        >
+      </div>
     {% endif %}
-
-    <img
-      src="{{ img | image_url: width: target_w }}"
-      srcset="
-        {{ img | image_url: width: 360 }} 360w,
-        {{ img | image_url: width: 600 }} 600w,
-        {{ img | image_url: width: 900 }} 900w
-      "
-      sizes="(min-width: 750px) 33vw, 100vw"
-      width="{{ target_w }}"
-      height="{{ target_h }}"
-      alt="{{ p.title | escape }}"
-      loading="lazy"
-      decoding="async"
-      class="product-card__image"
-    >
-  </div>
-{% endif %}
-
 
     <div class="product-card__title">{{ p.title }}</div>
 
@@ -66,7 +64,8 @@
         <span>{{ p.price | money }}</span>
       {% endif %}
     </div>
-  </div>
+  </a>
+</div>
 </product-card>
 
 {% stylesheet %}
@@ -75,4 +74,6 @@
   .card-gallery img { width: 100%; height: auto; display: block; }
   .product-card__title { font-size: 0.95rem; }
   .product-card__price { font-weight: 600; }
+  .product-card__link-block { display: block; color: inherit; text-decoration: none; }
+  .product-card__link-block:hover .product-card__title { text-decoration: underline; }
 {% endstylesheet %}
