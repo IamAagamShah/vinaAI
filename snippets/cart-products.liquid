@@ -523,10 +523,19 @@
     transition: opacity var(--drawer-animation-speed) var(--animation-easing),
       transform var(--drawer-animation-speed) var(--animation-easing);
 
-    @starting-style {
-      opacity: 0;
-      transform: translateY(-0.5rem);
+   @media (prefers-reduced-motion: no-preference) {
+      @keyframes cartFadeInUp {
+        from { opacity: 0; transform: translateY(-0.5rem); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Add this class/attr to the new cart rows when they appear */
+      .cart-products__item.is-entering,
+      .cart-products__item[data-enter] {
+        animation: cartFadeInUp 200ms ease-out both;
+      }
     }
+
   }
 
   .cart-item__error {
