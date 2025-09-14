@@ -9,10 +9,8 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "service-product-information-interview",
-      "settings": {}
-    }
+    "main": { "type": "product-information", "settings": {} },
+    "vina_form": { "type": "service-product-information-interview", "settings": {} }
   },
-  "order": ["main"]
+  "order": ["main", "vina_form"]
 }
