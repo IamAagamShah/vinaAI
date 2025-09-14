@@ -20,6 +20,10 @@
   {% endif %}
 {% endstyle %}
 
+<div class="resource-list__item">
+  {% render 'product-card', product: product, section_id: section.id %}
+</div>
+
 {% liquid
   assign has_quick_add = false
   if settings.quick_add and product.available
