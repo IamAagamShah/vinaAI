@@ -2,7 +2,7 @@
 Service Form — Interview Q&A
 - Collects answers + resume PDF
 - Adds to cart with line item properties
-- Redirects to /checkout
+- Redirects to checkout
 {% endcomment %}
 
 {% assign product_obj = product | default: closest.product %}
@@ -12,10 +12,16 @@ Service Form — Interview Q&A
   <h2 style="margin:0 0 .25rem 0;">{{ product_obj.title }}</h2>
   <p style="margin:.25rem 0 1rem 0;">Price: {{ product_obj.price | money_with_currency }}</p>
 
-  <form id="sf-form-{{ section.id }}" method="post"  action="/cart/add" enctype="multipart/form-data" novalidate>
-     <input type="hidden" name="id" value="{{ v.id }}">
-     <input type="hidden" name="return_to" value="/checkout">
-     <input type="hidden" name="properties[ServiceCode]" value="interview_qa">
+  <form
+    id="sf-form-{{ section.id }}"
+    method="post"
+    action="{{ routes.cart_add_url }}"
+    enctype="multipart/form-data"
+    data-no-ajax="true"
+  >
+    <input type="hidden" name="id" value="{{ v.id }}">
+    <input type="hidden" name="return_to" value="/checkout">
+    <input type="hidden" name="properties[ServiceCode]" value="interview_qa">
 
     {%- comment -%} Honeypot (bots fill this) {%- endcomment -%}
     <input type="text" name="properties[Website]" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;height:0;width:0;opacity:0;">
@@ -82,14 +88,18 @@ Service Form — Interview Q&A
       </div>
       <div style="display:flex;align-items:flex-start;gap:8px;grid-column:1 / -1;">
         <input type="checkbox" required style="margin-top:4px;">
-        <span>I agree to the <a href="/policies/refund-policy" target="_blank" rel="noopener">Terms & Refund policy</a>.</span>
+        <span>
+          I agree to the
+          <a href="{{ shop.refund_policy.url | default: '/policies/refund-policy' }}" target="_blank" rel="noopener">Terms & Refund policy</a>.
+        </span>
       </div>
     </div>
 
-    <button type="submit" class="button button--primary" style="width:100%;padding:14px 16px;border-radius:999px;margin-top:16px">Continue to secure checkout</button>
+    <button type="submit" class="button button--primary" style="width:100%;padding:14px 16px;border-radius:999px;margin-top:16px">
+      Continue to secure checkout
+    </button>
   </form>
 </div>
-
 
 {% schema %}
 { "name": "Interview Q&A Form", "settings": [], "presets": [{ "name": "Interview Q&A Form" }] }
