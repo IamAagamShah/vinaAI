@@ -12,9 +12,10 @@ Service Form — Interview Q&A
   <h2 style="margin:0 0 .25rem 0;">{{ product_obj.title }}</h2>
   <p style="margin:.25rem 0 1rem 0;">Price: {{ product_obj.price | money_with_currency }}</p>
 
-  <form id="sf-form-{{ section.id }}" enctype="multipart/form-data" novalidate>
-    <input type="hidden" name="id" value="{{ v.id }}">
-    <input type="hidden" name="properties[ServiceCode]" value="interview_qa">
+  <form id="sf-form-{{ section.id }}" method="post"  action="/cart/add" enctype="multipart/form-data" novalidate>
+     <input type="hidden" name="id" value="{{ v.id }}">
+     <input type="hidden" name="return_to" value="/checkout">
+     <input type="hidden" name="properties[ServiceCode]" value="interview_qa">
 
     {%- comment -%} Honeypot (bots fill this) {%- endcomment -%}
     <input type="text" name="properties[Website]" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;height:0;width:0;opacity:0;">
@@ -89,49 +90,6 @@ Service Form — Interview Q&A
   </form>
 </div>
 
-<script>
-(function(){
-  var form = document.getElementById('sf-form-{{ section.id }}');
-  if(!form) return;
-
-  function enable(btn){ if(btn){ btn.disabled=false; btn.textContent='Continue to secure checkout'; } }
-  function disable(btn){ if(btn){ btn.disabled=true; btn.textContent='Adding…'; } }
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    var btn = form.querySelector('button[type="submit"]');
-    disable(btn);
-
-    // Honeypot: if filled, silently abort
-    var hp = form.querySelector('input[name="properties[Website]"]');
-    if(hp && hp.value){ enable(btn); return; }
-
-    // Required PDF validation
-    var fileInput = form.querySelector('input[name="properties[ResumeFile]"]');
-    if(!fileInput || !fileInput.files || !fileInput.files[0]){
-      alert('Please upload your resume (PDF).'); enable(btn); return;
-    }
-    var f = fileInput.files[0];
-    var name = (f.name || '').toLowerCase();
-
-    if(f.type !== 'application/pdf' && !name.endsWith('.pdf')){
-      alert('Please upload a PDF file (.pdf).'); enable(btn); return;
-    }
-    if(f.size > 10*1024*1024){
-      alert('File is too large. Max 10 MB.'); enable(btn); return;
-    }
-
-    var fd = new FormData(form);
-    fetch('/cart/add.js',{ method:'POST', body:fd, headers:{ 'Accept':'application/json' }})
-      .then(function(r){ if(!r.ok) throw new Error('Cart add failed'); return r.json(); })
-      .then(function(){ window.location.href='/checkout'; })
-      .catch(function(){
-        alert('Could not add to cart. Please try again.');
-        enable(btn);
-      });
-  });
-})();
-</script>
 
 {% schema %}
 { "name": "Interview Q&A Form", "settings": [], "presets": [{ "name": "Interview Q&A Form" }] }
