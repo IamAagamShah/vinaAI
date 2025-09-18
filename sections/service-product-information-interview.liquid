@@ -3,6 +3,8 @@ Service Form — Interview Q&A
 - Collects answers + resume PDF
 - Adds to cart with line item properties
 - Redirects to checkout
+- Uses routes.cart_add_url (no hardcoded paths)
+- Properties prefixed with "_" are hidden on cart/checkout but appear in orders/API
 {% endcomment %}
 
 {% assign product_obj = product | default: closest.product %}
@@ -24,22 +26,22 @@ Service Form — Interview Q&A
     <input type="hidden" name="properties[ServiceCode]" value="interview_qa">
 
     {%- comment -%} Honeypot (bots fill this) {%- endcomment -%}
-    <input type="text" name="properties[Website]" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;height:0;width:0;opacity:0;">
+    <input type="text" name="properties[_Website]" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;height:0;width:0;opacity:0;">
 
     <div style="display:grid;grid-template-columns:1fr;gap:12px;">
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">First name*</label>
-        <input name="properties[FirstName]" required maxlength="60" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <input name="properties[_FirstName]" required maxlength="60" autocomplete="given-name" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Job title you’re applying for*</label>
-        <input name="properties[JobTitle]" required maxlength="120" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <input name="properties[_JobTitle]" required maxlength="120" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Experience level*</label>
-        <select name="properties[ExperienceLevel]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <select name="properties[_ExperienceLevel]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
           <option value="">Select…</option>
           <option>Intern/Junior</option>
           <option>Mid-level</option>
@@ -50,7 +52,7 @@ Service Form — Interview Q&A
 
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">What type of questions?*</label>
-        <select name="properties[QuestionType]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <select name="properties[_QuestionType]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
           <option value="">Select…</option>
           <option>Technical</option>
           <option>Behavioral</option>
@@ -60,26 +62,38 @@ Service Form — Interview Q&A
         </select>
       </div>
 
+      {# NEW: skills focus (hidden property) #}
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Specific skill(s) to focus on (optional)</label>
+        <input
+          name="properties[_SkillFocus]"
+          placeholder="e.g., React, Next.js, GraphQL"
+          maxlength="200"
+          style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;"
+        >
+        <small style="opacity:.75;margin-top:4px;">Separate multiple skills with commas.</small>
+      </div>
+
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Company / Industry (optional)</label>
-        <input name="properties[Company]" placeholder="e.g., FinTech, Google" maxlength="120" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <input name="properties[_Company]" placeholder="e.g., FinTech, Google" maxlength="120" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
       <div style="display:flex;flex-direction:column;grid-column:1 / -1;">
         <label style="font-weight:600;margin:2px 0 6px;">Job description / key responsibilities (optional)</label>
-        <textarea name="properties[JobDescription]" rows="3" maxlength="1200" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;"></textarea>
+        <textarea name="properties[_JobDescription]" rows="3" maxlength="1200" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;"></textarea>
       </div>
 
       <!-- Resume PDF (required) -->
       <div style="display:flex;flex-direction:column;grid-column:1 / -1;">
         <label style="font-weight:600;margin:2px 0 6px;">Upload resume (PDF only, max 10 MB)*</label>
-        <input type="file" name="properties[ResumeFile]" accept="application/pdf" required style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
+        <input type="file" name="properties[_ResumeFile]" accept="application/pdf" required style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
         <small style="opacity:.75;margin-top:4px;">Upload only .pdf file.</small>
       </div>
 
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Email*</label>
-        <input type="email" name="properties[Email]" required maxlength="120" inputmode="email" autocomplete="email" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <input type="email" name="properties[_Email]" required maxlength="120" inputmode="email" autocomplete="off" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
       <div style="display:flex;align-items:flex-start;gap:8px;grid-column:1 / -1;">
