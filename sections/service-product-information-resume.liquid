@@ -1,5 +1,5 @@
 {% comment %}
-Service Form — Resume Optimizer
+Service Form — AI Resume + Job Finder Agent
 - Collects answers + resume PDF
 - Adds to cart with properties → /checkout
 {% endcomment %}
@@ -13,55 +13,68 @@ Service Form — Resume Optimizer
 
   <form id="sf-form-{{ section.id }}" enctype="multipart/form-data" novalidate>
     <input type="hidden" name="id" value="{{ v.id }}">
-    <input type="hidden" name="properties[ServiceCode]" value="resume_optimizer">
+    <input type="hidden" name="properties[ServiceCode]" value="ai_resume_job_finder">
 
     {%- comment -%} Honeypot {%- endcomment -%}
     <input type="text" name="properties[Website]" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;height:0;width:0;opacity:0;">
 
     <div style="display:grid;grid-template-columns:1fr;gap:12px;">
+      <!-- Name -->
       <div style="display:flex;flex-direction:column;">
-        <label style="font-weight:600;margin:2px 0 6px;">First name*</label>
-        <input name="properties[FirstName]" required maxlength="60" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <label style="font-weight:600;margin:2px 0 6px;">Full name*</label>
+        <input name="properties[FullName]" required maxlength="80" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
+      <!-- Target role -->
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Target role / job title*</label>
         <input name="properties[TargetRole]" required maxlength="120" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
+      <!-- Preferred location -->
       <div style="display:flex;flex-direction:column;">
-        <label style="font-weight:600;margin:2px 0 6px;">Experience level*</label>
-        <select name="properties[ExperienceLevel]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
-          <option value="">Select…</option>
-          <option>Intern/Junior</option>
-          <option>Mid-level</option>
-          <option>Senior</option>
-          <option>Lead/Manager</option>
-        </select>
+        <label style="font-weight:600;margin:2px 0 6px;">Preferred job location*</label>
+        <input name="properties[PreferredLocation]" required maxlength="120" placeholder="City / Country / Remote" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
+      <!-- Salary expectation -->
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Salary expectation (optional)</label>
+        <input name="properties[SalaryExpectation]" maxlength="60" placeholder="$60k – $80k / ₹10L – ₹15L" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+      </div>
+
+      <!-- Work authorization -->
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Work authorization / Visa status (optional)</label>
+        <input name="properties[WorkAuthorization]" maxlength="120" placeholder="Citizen, PR, OPT, Work Permit…" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+      </div>
+
+      <!-- Extra notes -->
       <div style="display:flex;flex-direction:column;grid-column:1 / -1;">
-        <label style="font-weight:600;margin:2px 0 6px;">What should we focus on? (optional)</label>
-        <textarea name="properties[Focus]" rows="3" maxlength="600" placeholder="ATS keywords, achievements, formatting…" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;"></textarea>
+        <label style="font-weight:600;margin:2px 0 6px;">Extra notes (optional)</label>
+        <textarea name="properties[ExtraNotes]" rows="3" maxlength="600" placeholder="Specific industries, target companies, or instructions…" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;"></textarea>
       </div>
 
-      <!-- Resume PDF (required) -->
+      <!-- Resume file -->
       <div style="display:flex;flex-direction:column;grid-column:1 / -1;">
         <label style="font-weight:600;margin:2px 0 6px;">Upload current resume (PDF only, max 10 MB)*</label>
         <input type="file" name="properties[ResumeFile]" accept="application/pdf" required style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
         <small style="opacity:.75;margin-top:4px;">Upload only .pdf file.</small>
       </div>
 
+      <!-- LinkedIn -->
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">LinkedIn URL (optional)</label>
         <input type="url" name="properties[LinkedIn]" placeholder="https://…" maxlength="200" inputmode="url" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
+      <!-- Email -->
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Email*</label>
         <input type="email" name="properties[Email]" required maxlength="120" inputmode="email" autocomplete="email" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
+      <!-- Agreements -->
       <div style="display:flex;align-items:flex-start;gap:8px;grid-column:1 / -1;">
         <input type="checkbox" required style="margin-top:4px;">
         <span>I understand this is a paid digital service.</span>
@@ -121,5 +134,5 @@ Service Form — Resume Optimizer
 </script>
 
 {% schema %}
-{ "name": "Resume Optimizer Form", "settings": [], "presets": [{ "name": "Resume Optimizer Form" }] }
+{ "name": "AI Job Finder Form", "settings": [], "presets": [{ "name": "AI Resume + Job Finder Form" }] }
 {% endschema %}
