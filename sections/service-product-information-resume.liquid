@@ -28,19 +28,22 @@ Service Form — AI Resume + Job Finder Agent
       <!-- Target role -->
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Target role / job title*</label>
-        <input name="properties[TargetRole]" required maxlength="120" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <input name="properties[TargetRole]" required maxlength="120" placeholder="e.g. Software Engineer, Business Analyst" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <small style="opacity:.75;margin-top:4px;">Tip: Adding alternate job titles (e.g., “Developer / Programmer”) helps us find more results.</small>
       </div>
 
       <!-- Preferred location -->
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Preferred job location*</label>
         <input name="properties[PreferredLocation]" required maxlength="120" placeholder="City / Country / Remote" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <small style="opacity:.75;margin-top:4px;">Tip: Choosing a broader location (e.g., Remote or nearby cities) increases your chances of more job matches.</small>
       </div>
 
       <!-- Salary expectation -->
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Salary expectation (optional)</label>
         <input name="properties[SalaryExpectation]" maxlength="60" placeholder="$60k – $80k / ₹10L – ₹15L" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <small style="opacity:.75;margin-top:4px;">Tip: Keeping a wider salary range helps us find more opportunities for you.</small>
       </div>
 
       <!-- Work authorization -->
@@ -134,5 +137,5 @@ Service Form — AI Resume + Job Finder Agent
 </script>
 
 {% schema %}
-{ "name": "AI Job Finder Form", "settings": [], "presets": [{ "name": "AI Resume + Job Finder Form" }] }
+{ "name": "AI Job Finder Form", "settings": [], "presets": [{ "name": "AI Job Finder" }] }
 {% endschema %}
