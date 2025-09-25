@@ -29,30 +29,29 @@ Service Form — AI Resume + Job Finder Agent
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Target role / job title*</label>
         <input name="properties[TargetRole]" required maxlength="120" placeholder="e.g. Software Engineer, Nurse, Teacher" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
-        <small style="opacity:.75;margin-top:4px;">Tip: Adding alternate job titles helps us find more results.</small>
       </div>
 
       <!-- Preferred location -->
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Preferred job location*</label>
         <input name="properties[PreferredLocation]" required maxlength="120" placeholder="City / Country / Remote" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
-        <small style="opacity:.75;margin-top:4px;">Tip: Broader location (e.g., Remote or nearby cities) increases matches.</small>
+        <small style="opacity:.75;margin-top:4px;">Tip: Broader locations (Remote / nearby cities) increase job matches.</small>
       </div>
 
-      <!-- Experience level -->
+      <!-- Years of Experience -->
       <div style="display:flex;flex-direction:column;">
-        <label style="font-weight:600;margin:2px 0 6px;">Experience level*</label>
-        <select name="properties[ExperienceLevel]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+        <label style="font-weight:600;margin:2px 0 6px;">Years of experience*</label>
+        <select name="properties[ExperienceYears]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
           <option value="">Select…</option>
-          <option>Fresher / Intern</option>
-          <option>0–2 years</option>
-          <option>3–5 years</option>
-          <option>6–10 years</option>
-          <option>10+ years</option>
+          <option value="0-1">0–1 year (Fresher)</option>
+          <option value="2-3">2–3 years</option>
+          <option value="4-6">4–6 years</option>
+          <option value="7-10">7–10 years</option>
+          <option value="10+">10+ years</option>
         </select>
       </div>
 
-      <!-- Job type preference -->
+      <!-- Job type -->
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Preferred job type*</label>
         <select name="properties[JobType]" required style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
@@ -61,7 +60,21 @@ Service Form — AI Resume + Job Finder Agent
           <option>Part-time</option>
           <option>Internship</option>
           <option>Contract</option>
-          <option>Any</option>
+        </select>
+      </div>
+
+      <!-- Industry preference -->
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Industry preference (optional)</label>
+        <select name="properties[IndustryPreference]" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+          <option value="">No preference</option>
+          <option>IT / Software</option>
+          <option>Healthcare / Medical</option>
+          <option>Education / Training</option>
+          <option>Government / Public Sector</option>
+          <option>Finance / Banking</option>
+          <option>Arts / Design / Media</option>
+          <option>Other</option>
         </select>
       </div>
 
@@ -69,7 +82,6 @@ Service Form — AI Resume + Job Finder Agent
       <div style="display:flex;flex-direction:column;">
         <label style="font-weight:600;margin:2px 0 6px;">Salary expectation (optional)</label>
         <input name="properties[SalaryExpectation]" maxlength="60" placeholder="$60k – $80k / ₹10L – ₹15L" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
-        <small style="opacity:.75;margin-top:4px;">Tip: Wider salary range = more opportunities.</small>
       </div>
 
       <!-- Work authorization -->
@@ -78,17 +90,27 @@ Service Form — AI Resume + Job Finder Agent
         <input name="properties[WorkAuthorization]" maxlength="120" placeholder="Citizen, PR, OPT, Work Permit…" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
+      <!-- Alternate contact -->
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Alternate email (optional)</label>
+        <input type="email" name="properties[AlternateEmail]" maxlength="120" placeholder="name@example.com" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <label style="font-weight:600;margin:2px 0 6px;">Alternate phone (optional)</label>
+        <input type="tel" name="properties[AlternatePhone]" maxlength="20" placeholder="+1 555 555 5555" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
+      </div>
+
       <!-- Extra notes -->
       <div style="display:flex;flex-direction:column;grid-column:1 / -1;">
         <label style="font-weight:600;margin:2px 0 6px;">Extra notes (optional)</label>
-        <textarea name="properties[ExtraNotes]" rows="3" maxlength="600" placeholder="Specific industries, target companies, or instructions…" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;"></textarea>
+        <textarea name="properties[ExtraNotes]" rows="3" maxlength="600" placeholder="Specific companies, shift preferences, relocation notes…" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;"></textarea>
       </div>
 
       <!-- Resume file -->
       <div style="display:flex;flex-direction:column;grid-column:1 / -1;">
         <label style="font-weight:600;margin:2px 0 6px;">Upload current resume (PDF only, max 10 MB)*</label>
         <input type="file" name="properties[ResumeFile]" accept="application/pdf" required style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
-        <small style="opacity:.75;margin-top:4px;">Upload only .pdf file.</small>
       </div>
 
       <!-- LinkedIn -->
@@ -99,7 +121,7 @@ Service Form — AI Resume + Job Finder Agent
 
       <!-- Email -->
       <div style="display:flex;flex-direction:column;">
-        <label style="font-weight:600;margin:2px 0 6px;">Email*</label>
+        <label style="font-weight:600;margin:2px 0 6px;">Primary Email*</label>
         <input type="email" name="properties[Email]" required maxlength="120" inputmode="email" autocomplete="email" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;">
       </div>
 
@@ -111,6 +133,10 @@ Service Form — AI Resume + Job Finder Agent
       <div style="display:flex;align-items:flex-start;gap:8px;grid-column:1 / -1;">
         <input type="checkbox" required style="margin-top:4px;">
         <span>I agree to the <a href="/policies/refund-policy" target="_blank" rel="noopener">Terms & Refund policy</a>.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;grid-column:1 / -1;">
+        <input type="checkbox" name="properties[ConsentAutoApply]" required style="margin-top:4px;">
+        <span>I give consent to automatically apply on my behalf for jobs with “Direct Apply”.</span>
       </div>
     </div>
 
